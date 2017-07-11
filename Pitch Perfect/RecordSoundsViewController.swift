@@ -9,7 +9,29 @@
 import UIKit
 import AVFoundation
 
-class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
+// MARK: - Audio Recorder Delegate
+
+extension RecordSoundsViewController: AVAudioRecorderDelegate {
+    
+    func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
+        print("audioRecorderDidFinishRecording")
+        if flag {
+            performSegue(withIdentifier: "stopRecording", sender: audioRecorder.url)
+        } else {
+            configureUI(true)
+            displayUIAlert(message: "Recording was not Successful")
+            
+        }
+    }
+    
+    func displayUIAlert(message: String) {
+        let alert = UIAlertController(title: "Error Recording", message: message, preferredStyle: UIAlertControllerStyle.alert)
+        alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: nil))
+        self.present(alert, animated: true, completion: nil)
+    }
+}
+
+class RecordSoundsViewController: UIViewController {
 
     var audioRecorder: AVAudioRecorder!
     
@@ -22,11 +44,6 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         stopRecordingButton.isEnabled = false
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        print("viewWillAppear")
     }
 
     // MARK: - Recording Actions
@@ -70,18 +87,6 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
         try! audioSession.setActive(false)
     }
     
-    // MARK: - Audio Recorder Delegate
-    
-    func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
-        print("audioRecorderDidFinishRecording")
-        
-        if flag {
-            performSegue(withIdentifier: "stopRecording", sender: audioRecorder.url)
-        } else {
-            print("Recording was not Successful")
-        }
-    }
-    
     // MARK: - Navigation Callback
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -92,4 +97,3 @@ class RecordSoundsViewController: UIViewController, AVAudioRecorderDelegate {
         }
     }
 }
-
